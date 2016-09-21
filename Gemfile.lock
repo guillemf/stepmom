@@ -37,6 +37,7 @@ GEM
     json (1.8.3)
     multi_json (1.12.1)
     multi_test (0.1.2)
+    power_assert (0.2.2)
     rainbow (2.1.0)
     rake (11.3.0)
     rdoc (4.2.2)
@@ -45,6 +46,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
+    test-unit (3.0.8)
+      power_assert
     thor (0.19.1)
 
 PLATFORMS
@@ -55,6 +58,7 @@ DEPENDENCIES
   rake
   rdoc
   stepmom!
+  test-unit
 
 BUNDLED WITH
    1.13.1

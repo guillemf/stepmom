@@ -33,7 +33,7 @@ class StepTest < Test::Unit::TestCase
   
   def test_get_argument_with_single_argument
     newStep = Stepmom::Parser::Step.new("When /^I get help for \"([^\\\"]*)\"$/ do |app_name|")
-    assert_equal 3, newStep.tokens.count
+    assert_equal 4, newStep.tokens.count
     
     tokenType, tokenContent = newStep.tokens[1]
     assert_equal :text, tokenType
@@ -46,7 +46,7 @@ class StepTest < Test::Unit::TestCase
 
   def test_get_argument_with_multiple_arguments
     newStep = Stepmom::Parser::Step.new("Then /^I should see a message \"([^\\\"]*)\" and another message \"([^\\\"]*)\"$/ do |arg1, arg2|")
-    assert_equal 5, newStep.tokens.count
+    assert_equal 6, newStep.tokens.count
     
     tokenType, tokenContent = newStep.tokens[1]
     assert_equal :text, tokenType
@@ -58,7 +58,7 @@ class StepTest < Test::Unit::TestCase
 
     tokenType, tokenContent = newStep.tokens[3]
     assert_equal :text, tokenType
-    assert_equal "and another message", tokenContent
+    assert_equal "\" and another message", tokenContent
     
     tokenType, tokenContent = newStep.tokens[4]
     assert_equal :argument, tokenType
