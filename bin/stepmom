@@ -1,0 +1,115 @@
+#!/usr/bin/env ruby
+require 'gli'
+begin # XXX: Remove this begin/rescue before distributing your app
+require 'stepmom'
+rescue LoadError
+  STDERR.puts "In development, you need to use `bundle exec bin/stepmom` to run your app"
+  STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
+  STDERR.puts "Feel free to remove this message from bin/stepmom now"
+  exit 64
+end
+
+include GLI::App
+
+config_file File.join(ENV['HOME'], '.stepmom.rc.yaml')
+
+program_desc 'Helps you to find duplicates and group different steps in a single one'
+
+version Stepmom::VERSION
+
+subcommand_option_handling :normal
+arguments :strict
+
+# desc 'Describe some switch here'
+# switch [:s,:switch]
+
+desc 'Path to the steps'
+default_value '.'
+arg_name 'Path'
+flag [:p,:path]
+
+desc 'List all steps in the selected files'
+long_desc "
+This command will list all the steps contained in the files specified by path option. 
+If no option is passed, the app will list the steps contained in current folder. 
+If no file pattern is set, all files with 'rb' extension will be included in the list.
+"
+arg_name 'file_pattern'
+command :list do |c|
+  # c.desc 'Describe a switch to list'
+  # c.switch :s
+
+  c.desc 'Sort list. Options are ASC and DESC'
+  c.default_value 'No sort'
+  c.arg_name 'sorting'
+  c.flag [:s, :sort]
+  c.action do |global_options,options,args|
+
+    fileSteps = Stepmom::Parser::StepsFile.getSteps(global_options[:path])
+    
+    exit(1) unless fileSteps.count > 0
+
+    if options[:sort] != "No sort"
+      fileSteps = fileSteps.sort do |x, y|
+        if options[:sort] == "ASC"
+          x.definition <=> y.definition
+        elsif options[:sort] == "DESC"
+          y.definition <=> x.definition
+        end
+      end
+    end
+    fileSteps.each do |step|
+      $stdout.puts step.format(nil)
+    end
+  end
+end
+
+desc 'Look for a specific step definition in the selected files'
+arg_name 'step_description'
+long_desc "
+This command helps you find a step definition that matches a step description.
+When -c flag is set will perform a case sensitive comparision.
+If -r flag is set will execute regular expressions in the step definition, otherwise they will be threated like text.
+"
+command :search do |c|
+  c.desc 'Match case'
+  c.switch :c
+  
+  c.desc 'Use regular expressions'
+  c.switch :r
+  
+  c.action do |global_options,options,args|
+    puts "search command ran"
+  end
+end
+
+desc 'Test which steps would match a step description in the selected files'
+arg_name 'step_description'
+command :test do |c|
+  c.action do |global_options,options,args|
+    $stdout.puts "tree command ran"
+  end
+end
+
+pre do |global,command,options,args|
+  # Pre logic here
+  # Return true to proceed; false to abort and not call the
+  # chosen command
+  # Use skips_pre before a command to skip this block
+  # on that command only
+  true
+end
+
+post do |global,command,options,args|
+  # Post logic here
+  # Use skips_post before a command to skip this
+  # block on that command only
+end
+
+on_error do |exception|
+  # Error logic here
+  # return false to skip default error handling
+  true
+end
+
+exit run(ARGV)
