@@ -46,10 +46,11 @@ command :list do |c|
   c.action do |global_options,options,args|
 
     fileSteps = Stepmom::Parser::StepsFile.getSteps(global_options[:path])
-    
+
     exit(1) unless fileSteps.count > 0
 
     if options[:sort] != "No sort"
+      
       fileSteps = fileSteps.sort do |x, y|
         if options[:sort] == "ASC"
           x.definition <=> y.definition
@@ -58,6 +59,7 @@ command :list do |c|
         end
       end
     end
+
     fileSteps.each do |step|
       $stdout.puts step.format(nil)
     end

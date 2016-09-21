@@ -3,6 +3,7 @@ PATH
   specs:
     stepmom (0.0.1)
       gli (= 2.14.0)
+      rainbow (= 2.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -36,6 +37,7 @@ GEM
     json (1.8.3)
     multi_json (1.12.1)
     multi_test (0.1.2)
+    rainbow (2.1.0)
     rake (11.3.0)
     rdoc (4.2.2)
       json (~> 1.4)

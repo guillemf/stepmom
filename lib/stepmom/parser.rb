@@ -1,3 +1,5 @@
+require 'rainbow'
+
 module Stepmom
   module Parser
     class Step
@@ -8,12 +10,18 @@ module Stepmom
         /and(.*)/i    => :And,
         /but(.*)/i    => :But,
       }
+      PARAMETERS_LIST = [
+        /[\"]([^\"]*)[\"]/,
+        /([(][\.][(+|*)][)][\?]?)/
+      ]
+      
       attr_reader :definition,
                   :tokens
       def initialize(description)
         return unless description.length > 0
-
+        
         matches = /[\/][\^](.*)[\$][\/]/.match(description)
+
         if matches != nil && matches.length > 0
           @definition = matches[1]
           @tokens = []
@@ -31,18 +39,29 @@ module Stepmom
           
           # Avoid \" that could devirtuate parameter regex
           tmpDefinition = @definition.gsub("^\\\"", "^\\™")
-          paramList = /[\"]([^\"]*)[\"]/.match(tmpDefinition)
-
+          paramList = []
+          Step::PARAMETERS_LIST.each do |expression|
+            newParamList = tmpDefinition.scan(expression).map do |match|
+              if match.class == Array
+                match[0]
+              else
+                match
+              end
+            end
+            paramList.push(*newParamList)
+          end
+          
           # Process step with no params
-          if !paramList
+          if paramList.count == 0
             newText = [:text, tmpDefinition.strip]
             @tokens.insert(@tokens.length, newText)
             return
           end
           
           paramList[0..paramList.length-1].each do |aParam|
+
             paramPosition = tmpDefinition.index(aParam)
-            
+
             # Extract text between params
             if paramPosition > 0
               newText = [:text, tmpDefinition[0..paramPosition-2].strip]
@@ -52,20 +71,34 @@ module Stepmom
             # Extract param content
             tmpDefinition = tmpDefinition[aParam.length..tmpDefinition.length]
             preFormattedParam = aParam.gsub('"', '').strip
-            newToken = [:argument, preFormattedParam.gsub!('™', '"')]
+            newToken = [:argument, preFormattedParam.gsub('™', '"')]
             @tokens.insert(@tokens.length, newToken)
             if tmpDefinition.length == 0 
               break
             end
           end
+          
+          if tmpDefinition.length > 0
+            newText = [:text, tmpDefinition]
+            @tokens.insert(@tokens.length, newText)
+          end 
         end
       end
       
       def format(flags)
         if @tokens
-          flat_tokens = @tokens.map { |token| token[1] }
-          formattedTokens = ""
-          flat_tokens.each { |token| formattedTokens += "#{token}\t" }
+          formattedTokens = ""          
+          @tokens.each do |token| 
+            formattedTokens += case token[0]
+            when :keyword
+              Rainbow("#{token[1]}\t").green
+            when :argument
+              Rainbow("#{token[1]} ").red
+            else
+              "#{token[1]} "
+            end
+          end
+          
           formattedTokens.strip
           # remove last tab
           formattedTokens[0..formattedTokens.length-2]
@@ -75,7 +108,8 @@ module Stepmom
     class StepsFile
       def self.getSteps(filePath)
         steps = []
-        File.open(File.expand_path(filePath)).each do |line|
+                
+        File.open(File.expand_path(filePath)).each do |line|          
           newStep = Stepmom::Parser::Step.new(line)
           if newStep.tokens
             steps.push newStep

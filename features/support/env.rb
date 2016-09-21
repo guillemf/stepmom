@@ -37,6 +37,17 @@ Then(/^I cant see the bet$/) do
   wait_for_element_exists("button id:'stakeField2'")
 end
 
+Given(/^I am (.*)? on the Homepage$/) do |arg|
+  element_exists("view id:'HomePage_Container'")
+end
+
+Given(/^I log in with username: (.+) and password: (.+)$/) do |username, password|
+  element_exists("view id:'\#\{username\}'")
+  element_exists("view id:'\#\{password\}'")
+end
+
 STEP_SAMPLES
+  
   file.close unless file.nil?
+
 end

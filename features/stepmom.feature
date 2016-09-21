@@ -18,9 +18,11 @@ Feature: We can list the steps contained in a file or folder
   	When I run `stepmom -p ~/Tmp/test_steps.rb list -s ASC`
   	Then the stdout should contain:
   	"""
-  	Given	I am on a page with betting options
-	Then	I cant see the bet
-  	When	I select a bet
+	Given	I am (.*)?  on the Homepage
+	Given	I am on a page with betting options
+ 	Then	I cant see the bet
+	Given	I log in with username: (.+) and password: (.+)
+ 	When	I select a bet
   	"""
 	
   Scenario: List current folder sorted descending
@@ -29,6 +31,8 @@ Feature: We can list the steps contained in a file or folder
 	Then the stdout should contain:
 	"""
 	When	I select a bet
+	Given	I log in with username: (.+) and password: (.+)
 	Then	I cant see the bet
 	Given	I am on a page with betting options
+	Given	I am (.*)?  on the Homepage
 	"""
