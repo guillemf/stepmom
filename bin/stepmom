@@ -20,11 +20,11 @@ version Stepmom::VERSION
 subcommand_option_handling :normal
 arguments :strict
 
-# desc 'Describe some switch here'
-# switch [:s,:switch]
+desc 'Show file information'
+switch [:i,:info]
 
 desc 'Path to the steps'
-default_value '.'
+default_value './steps'
 arg_name 'Path'
 flag [:p,:path]
 
@@ -45,10 +45,28 @@ command :list do |c|
   c.flag [:s, :sort]
   c.action do |global_options,options,args|
 
-    fileSteps = Stepmom::Parser::StepsFile.getSteps(global_options[:path])
+    selectedPath = global_options[:path]
+    isFolder = File.directory?(selectedPath)
+
+    if isFolder
+      fileSteps = []
+      filesPattern = File.expand_path(File.join(selectedPath, "*_steps.rb"))
+      Dir.glob(filesPattern) do |stepsFile|
+        newFileSteps = Stepmom::Parser::StepsFile.getSteps(stepsFile)
+        fileSteps.push(*newFileSteps)
+      end
+    else
+      fileSteps = Stepmom::Parser::StepsFile.getSteps(selectedPath)
+    end
 
     exit(1) unless fileSteps.count > 0
 
+    # if isFolder
+    #   puts "It's directory"
+    # else
+    #   puts "It's file"
+    # end
+    
     if options[:sort] != "No sort"
       
       fileSteps = fileSteps.sort do |x, y|
@@ -60,9 +78,17 @@ command :list do |c|
       end
     end
 
-    fileSteps.each do |step|
-      $stdout.puts step.format(nil)
+    formatFlags = []
+    if isFolder
+      # formatFlags.push([Stepmom::Parser::Step::FORMAT_FLAGS::showFile])
+      formatFlags.push(:showFile)
     end
+
+    fileSteps.each do |step|
+      formattedStep = step.format(formatFlags) 
+      $stdout.puts formattedStep unless formattedStep.length == 0
+    end
+    
   end
 end
 
@@ -99,6 +125,8 @@ pre do |global,command,options,args|
   # chosen command
   # Use skips_pre before a command to skip this block
   # on that command only
+  raise GLI::CustomExit.new("Can't find #{global[:path]}",-5) unless File.exists?(global[:path])
+
   true
 end
 

@@ -11,13 +11,24 @@ module Stepmom
         /but(.*)/i    => :But,
       }
       PARAMETERS_LIST = [
-        /[\"]([^\"]*)[\"]/,
-        /([(][\.][(+|*)][)][\?]?)/
+        /([(][\[][\^][™][\]][*][)])/,
+        /([(][\.][(+|*)][)][\?]?)/,
+        /[(][\\][d][+][)]/
+      ]
+      
+      FORMAT_FLAGS = [
+        :showPath,
+        :showFile
       ]
       
       attr_reader :definition,
                   :tokens
+      attr_accessor :fileInfo
+      
       def initialize(description)
+        #initialize file info always
+        @fileInfo = {}
+        
         return unless description.length > 0
         
         matches = /[\/][\^](.*)[\$][\/]/.match(description)
@@ -38,9 +49,10 @@ module Stepmom
           return unless @tokens.count > 0
           
           # Avoid \" that could devirtuate parameter regex
-          tmpDefinition = @definition.gsub("^\\\"", "^\\™")
+          tmpDefinition = @definition.gsub("\^\"", "\^™")
           paramList = []
           Step::PARAMETERS_LIST.each do |expression|
+            # expression.match(tmpDefinition)
             newParamList = tmpDefinition.scan(expression).map do |match|
               if match.class == Array
                 match[0]
@@ -61,23 +73,18 @@ module Stepmom
           paramList[0..paramList.length-1].each do |aParam|
 
             paramPosition = tmpDefinition.index(aParam)
-
             # Extract text between params
             if paramPosition > 0
-              newText = [:text, tmpDefinition[0..paramPosition-2].strip]
+              newText = [:text, tmpDefinition[0..paramPosition-1]]
               @tokens.insert(@tokens.length, newText)
-              tmpDefinition = tmpDefinition[paramPosition..tmpDefinition.length]
             end
-            # Extract param content
-            tmpDefinition = tmpDefinition[aParam.length..tmpDefinition.length]
-            preFormattedParam = aParam.gsub('"', '').strip
-            newToken = [:argument, preFormattedParam.gsub('™', '"')]
+            tmpDefinition = tmpDefinition[(paramPosition + aParam.length)..tmpDefinition.length]
+            newToken = [:argument, aParam.gsub("\^™", "\^\"").strip]
             @tokens.insert(@tokens.length, newToken)
             if tmpDefinition.length == 0 
               break
             end
           end
-          
           if tmpDefinition.length > 0
             newText = [:text, tmpDefinition]
             @tokens.insert(@tokens.length, newText)
@@ -87,30 +94,42 @@ module Stepmom
       
       def format(flags)
         if @tokens
-          formattedTokens = ""          
-          @tokens.each do |token| 
-            formattedTokens += case token[0]
-            when :keyword
-              Rainbow("#{token[1]}\t").green
-            when :argument
-              Rainbow("#{token[1]} ").red
+          formattedTokens = ""
+          
+          if flags.include?(:showFile)            
+            if fileInfo[:path]
+              truncatedFileName = File.basename(fileInfo[:path])[0..19]
+              formattedTokens = Rainbow(truncatedFileName + (" " * (20 - truncatedFileName.length)) + "\t").khaki
             else
-              "#{token[1]} "
+              formattedTokens = " " * 20 + "\t"
             end
           end
           
+          @tokens.each do |token| 
+            formattedTokens += case token[0]
+            when :keyword
+              Rainbow("#{token[1]}").green + "\t"
+            when :argument
+              Rainbow("#{token[1]}").red
+            else
+              "#{token[1]}"
+            end
+          end
           formattedTokens.strip
           # remove last tab
-          formattedTokens[0..formattedTokens.length-2]
+          if formattedTokens[formattedTokens.length-1] == '\t'
+            formattedTokens = formattedTokens[0..formattedTokens.length-1]
+          end
+          return formattedTokens
         end
       end
     end
     class StepsFile
       def self.getSteps(filePath)
         steps = []
-                
         File.open(File.expand_path(filePath)).each do |line|          
           newStep = Stepmom::Parser::Step.new(line)
+          newStep.fileInfo[:path] = filePath
           if newStep.tokens
             steps.push newStep
           end
