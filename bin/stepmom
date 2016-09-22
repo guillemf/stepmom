@@ -36,8 +36,11 @@ If no file pattern is set, all files with 'rb' extension will be included in the
 "
 arg_name 'file_pattern'
 command :list do |c|
-  # c.desc 'Describe a switch to list'
-  # c.switch :s
+  c.desc 'Show file name'
+  c.switch :f
+  
+  c.desc 'Show Keyword'
+  c.switch :k
 
   c.desc 'Sort list. Options are ASC and DESC'
   c.default_value 'No sort'
@@ -45,7 +48,7 @@ command :list do |c|
   c.flag [:s, :sort]
   c.action do |global_options,options,args|
 
-    selectedPath = global_options[:path]
+    selectedPath = File.expand_path(global_options[:path])
     isFolder = File.directory?(selectedPath)
 
     if isFolder
@@ -60,30 +63,27 @@ command :list do |c|
     end
 
     exit(1) unless fileSteps.count > 0
-
-    # if isFolder
-    #   puts "It's directory"
-    # else
-    #   puts "It's file"
-    # end
     
     if options[:sort] != "No sort"
       
       fileSteps = fileSteps.sort do |x, y|
-        if options[:sort] == "ASC"
+        if options[:sort].upcase == "ASC"
           x.definition <=> y.definition
-        elsif options[:sort] == "DESC"
+        elsif options[:sort].upcase == "DESC"
           y.definition <=> x.definition
         end
       end
     end
 
     formatFlags = []
-    if isFolder
-      # formatFlags.push([Stepmom::Parser::Step::FORMAT_FLAGS::showFile])
+    if isFolder && options[:f]
       formatFlags.push(:showFile)
     end
-
+    
+    if options[:k]
+      formatFlags.push(:showKeyword)
+    end
+    
     fileSteps.each do |step|
       formattedStep = step.format(formatFlags) 
       $stdout.puts formattedStep unless formattedStep.length == 0
@@ -125,7 +125,7 @@ pre do |global,command,options,args|
   # chosen command
   # Use skips_pre before a command to skip this block
   # on that command only
-  raise GLI::CustomExit.new("Can't find #{global[:path]}",-5) unless File.exists?(global[:path])
+  raise GLI::CustomExit.new("Can't find #{global[:path]}",-5) unless File.exists?(File.expand_path(global[:path]))
 
   true
 end

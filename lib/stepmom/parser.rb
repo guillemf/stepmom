@@ -18,7 +18,8 @@ module Stepmom
       
       FORMAT_FLAGS = [
         :showPath,
-        :showFile
+        :showFile,
+        :showKeyword
       ]
       
       attr_reader :definition,
@@ -108,7 +109,11 @@ module Stepmom
           @tokens.each do |token| 
             formattedTokens += case token[0]
             when :keyword
-              Rainbow("#{token[1]}").green + "\t"
+              if flags.include?(:showKeyword)
+                Rainbow("#{token[1]}").green + "\t"
+              else
+                ""
+              end
             when :argument
               Rainbow("#{token[1]}").red
             else

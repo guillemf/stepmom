@@ -8,9 +8,11 @@ Feature: We can list the steps contained in a file or folder
 	When I run `stepmom -p ~/Tmp/test_steps.rb list`
 	Then the stdout should contain:
 	"""
-	Given	I am on a page with betting options
-	When	I select a bet
-	Then	I cant see the bet
+	I am on a page with betting options
+	I select a bet
+	I cant see the bet
+	I am (.*)? on the Homepage
+	I log in with username: (.+) and password: (.+)
 	"""
 	
   Scenario: List current folder sorted ascending
@@ -18,11 +20,11 @@ Feature: We can list the steps contained in a file or folder
   	When I run `stepmom -p ~/Tmp/test_steps.rb list -s ASC`
   	Then the stdout should contain:
   	"""
-	Given	I am (.*)?  on the Homepage
-	Given	I am on a page with betting options
- 	Then	I cant see the bet
-	Given	I log in with username: (.+) and password: (.+)
- 	When	I select a bet
+	I am (.*)? on the Homepage
+	I am on a page with betting options
+ 	I cant see the bet
+	I log in with username: (.+) and password: (.+)
+ 	I select a bet
   	"""
 	
   Scenario: List current folder sorted descending
@@ -30,9 +32,45 @@ Feature: We can list the steps contained in a file or folder
 	When I run `stepmom -p ~/Tmp/test_steps.rb list -s DESC`
 	Then the stdout should contain:
 	"""
-	When	I select a bet
-	Given	I log in with username: (.+) and password: (.+)
-	Then	I cant see the bet
-	Given	I am on a page with betting options
-	Given	I am (.*)?  on the Homepage
+	I select a bet
+	I log in with username: (.+) and password: (.+)
+	I cant see the bet
+	I am on a page with betting options
+	I am (.*)? on the Homepage
 	"""
+	
+  Scenario: List current folder with keyword
+  	Given a file named "~/Tmp/test_steps.rb" exists
+  	When I run `stepmom -p ~/Tmp/test_steps.rb list -k`
+  	Then the stdout should contain:
+  	"""
+	Given	I am on a page with betting options
+  	When	I select a bet
+  	Then	I cant see the bet
+  	Given	I am (.*)? on the Homepage
+  	Given	I log in with username: (.+) and password: (.+)
+  	"""
+	
+  Scenario: List current folder sorted ascending with keyword
+	Given a file named "~/Tmp/test_steps.rb" exists
+	When I run `stepmom -p ~/Tmp/test_steps.rb list -s ASC -k`
+	Then the stdout should contain:
+	"""
+	Given	I am (.*)? on the Homepage
+	Given	I am on a page with betting options
+	Then	I cant see the bet
+	Given	I log in with username: (.+) and password: (.+)
+	When	I select a bet
+	"""
+	
+  Scenario: List current folder sorted descending with keyword
+  	Given a file named "~/Tmp/test_steps.rb" exists
+  	When I run `stepmom -p ~/Tmp/test_steps.rb list -s DESC -k`
+  	Then the stdout should contain:
+  	"""
+  	When	I select a bet
+  	Given	I log in with username: (.+) and password: (.+)
+  	Then	I cant see the bet
+  	Given	I am on a page with betting options
+  	Given	I am (.*)? on the Homepage
+  	"""

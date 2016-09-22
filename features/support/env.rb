@@ -47,7 +47,7 @@ Given(/^I log in with username: (.+) and password: (.+)$/) do |username, passwor
 end
 
 STEP_SAMPLES
-  
+
   file.close unless file.nil?
 
 end
