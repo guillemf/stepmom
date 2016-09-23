@@ -76,8 +76,13 @@ command :list do |c|
     end
 
     formatFlags = []
-    if isFolder && options[:f]
-      formatFlags.push(:showFile)
+    if options[:f]
+      if isFolder
+        formatFlags.push(:showFile)
+      else
+        fileInfo = Stepmom::Parser::StepsFile.getInfo(selectedPath, fileSteps)
+        puts Stepmom::Parser::StepsFile.format(fileInfo)
+      end
     end
     
     if options[:k]

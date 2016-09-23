@@ -14,8 +14,7 @@ module Stepmom
         /([(][\[][\^][™][\]][*][)])/,
         /([(][\.][(+|*)][)][\?]?)/,
         /[(][\\][d][+][)]/
-      ]
-      
+      ]  
       FORMAT_FLAGS = [
         :showPath,
         :showFile,
@@ -100,7 +99,7 @@ module Stepmom
           if flags.include?(:showFile)            
             if fileInfo[:path]
               truncatedFileName = File.basename(fileInfo[:path])[0..19]
-              formattedTokens = Rainbow(truncatedFileName + (" " * (20 - truncatedFileName.length)) + "\t").khaki
+              formattedTokens = Rainbow(truncatedFileName + (" " * (20 - truncatedFileName.length)) + "\t").color(:khaki)
             else
               formattedTokens = " " * 20 + "\t"
             end
@@ -130,6 +129,7 @@ module Stepmom
       end
     end
     class StepsFile
+      
       def self.getSteps(filePath)
         steps = []
         File.open(File.expand_path(filePath)).each do |line|          
@@ -140,6 +140,30 @@ module Stepmom
           end
         end
         return steps
+      end
+      
+      def self.getInfo(filePath, steps)
+        return { 
+          :fileName   => File.basename(filePath),
+          :lastAcces  => File.mtime(filePath),
+          :fileSize   => File.size(filePath),
+          :stepCount  => steps.count
+        }
+      end
+      
+      def self.format(fileInfo)
+        fileName = Rainbow("File name:\t").color(:royalblue) + Rainbow("#{fileInfo[:fileName]}").white
+        todayFormatted = fileInfo[:lastAcces].strftime("%Y-%m-%d")
+        fileTime = Rainbow("Last updated:\t").color(:royalblue) + Rainbow("#{todayFormatted}").white
+        fileSize = Rainbow("Size:\t\t").color(:royalblue) + Rainbow("#{fileInfo[:fileSize]}").white + " bytes"
+        fileSteps= Rainbow("Steps:\t\t").color(:royalblue) + Rainbow("#{fileInfo[:stepCount]}").white + " steps"
+        <<FORMAT_INFO
+#{fileName}
+#{fileTime}
+#{fileSize}
+#{fileSteps}
+
+FORMAT_INFO
       end
     end
   end

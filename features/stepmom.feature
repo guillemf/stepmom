@@ -74,3 +74,90 @@ Feature: We can list the steps contained in a file or folder
   	Given	I am on a page with betting options
   	Given	I am (.*)? on the Homepage
   	"""
+	
+  Scenario: List file with file info
+  	Given a file named "~/Tmp/test_steps.rb" exists
+  	When I run `stepmom -p ~/Tmp/test_steps.rb list -f`
+  	Then the stdout should contain:
+  	"""
+	File name:	test_steps.rb
+	Last updated:	2016-09-23
+	Size:		877 bytes
+	Steps:		5 steps
+
+	I am on a page with betting options
+	I select a bet
+	I cant see the bet
+	I am (.*)? on the Homepage
+	I log in with username: (.+) and password: (.+)
+  	"""
+	
+  Scenario: List file sorted ascending with file info
+	Given a file named "~/Tmp/test_steps.rb" exists
+	When I run `stepmom -p ~/Tmp/test_steps.rb list -s ASC -f`
+	Then the stdout should contain:
+	"""
+	File name:	test_steps.rb
+	Last updated:	2016-09-23
+	Size:		877 bytes
+	Steps:		5 steps
+
+	I am (.*)? on the Homepage
+	I am on a page with betting options
+	I cant see the bet
+	I log in with username: (.+) and password: (.+)
+	I select a bet
+	"""
+	
+  Scenario: List file sorted descending with file info
+  	Given a file named "~/Tmp/test_steps.rb" exists
+  	When I run `stepmom -p ~/Tmp/test_steps.rb list -s DESC -f`
+  	Then the stdout should contain:
+  	"""
+	File name:	test_steps.rb
+	Last updated:	2016-09-23
+	Size:		877 bytes
+	Steps:		5 steps
+
+  	I select a bet
+  	I log in with username: (.+) and password: (.+)
+  	I cant see the bet
+  	I am on a page with betting options
+  	I am (.*)? on the Homepage
+  	"""
+	
+  Scenario: List folder with file name
+  	Given a file named "~/Tmp/test_steps.rb" exists
+  	When I run `stepmom -p ~/Tmp list -f`
+  	Then the stdout should contain:
+  	"""
+	test_steps.rb       	I am on a page with betting options
+	test_steps.rb       	I select a bet
+	test_steps.rb       	I cant see the bet
+	test_steps.rb       	I am (.*)? on the Homepage
+	test_steps.rb       	I log in with username: (.+) and password: (.+)
+  	"""
+	
+  Scenario: List folder sorted ascending with file name
+	Given a file named "~/Tmp/test_steps.rb" exists
+	When I run `stepmom -p ~/Tmp list -s ASC -f`
+	Then the stdout should contain:
+	"""
+	test_steps.rb       	I am (.*)? on the Homepage
+	test_steps.rb       	I am on a page with betting options
+	test_steps.rb       	I cant see the bet
+	test_steps.rb       	I log in with username: (.+) and password: (.+)
+	test_steps.rb       	I select a bet
+	"""
+	
+  Scenario: List folder sorted descending with file name
+  	Given a file named "~/Tmp/test_steps.rb" exists
+  	When I run `stepmom -p ~/Tmp list -s DESC -f`
+  	Then the stdout should contain:
+  	"""
+  	test_steps.rb       	I select a bet
+  	test_steps.rb       	I log in with username: (.+) and password: (.+)
+  	test_steps.rb       	I cant see the bet
+  	test_steps.rb       	I am on a page with betting options
+  	test_steps.rb       	I am (.*)? on the Homepage
+  	"""
