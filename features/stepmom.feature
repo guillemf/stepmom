@@ -81,7 +81,9 @@ Feature: We can list the steps contained in a file or folder
   	Then the stdout should contain:
   	"""
 	File name:	test_steps.rb
-	Last updated:	2016-09-23
+	"""
+  	And the stdout should contain:
+  	"""
 	Size:		877 bytes
 	Steps:		5 steps
 
@@ -98,7 +100,9 @@ Feature: We can list the steps contained in a file or folder
 	Then the stdout should contain:
 	"""
 	File name:	test_steps.rb
-	Last updated:	2016-09-23
+	"""
+  	And the stdout should contain:
+  	"""
 	Size:		877 bytes
 	Steps:		5 steps
 
@@ -115,7 +119,9 @@ Feature: We can list the steps contained in a file or folder
   	Then the stdout should contain:
   	"""
 	File name:	test_steps.rb
-	Last updated:	2016-09-23
+	"""
+  	And the stdout should contain:
+  	"""
 	Size:		877 bytes
 	Steps:		5 steps
 
