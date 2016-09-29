@@ -65,4 +65,32 @@ class StepTest < Test::Unit::TestCase
     assert_equal '([^"]*)', tokenContent
   end
 
+  def test_get_step_test
+    newStep = Stepmom::Parser::Step.new('Then /^I should see a message "([^"]*)" and another message "([^"]*)"$/ do |arg1, arg2|')
+    assert_equal 'I should see a message " " and another message " "', newStep.text
+  end
+  
+  def test_get_empty_step_text
+    newStep = Stepmom::Parser::Step.new('Then /^$/')
+    assert_equal "", newStep.text
+  end
+
+  def test_get_step_distance_equals
+    newStep1 = Stepmom::Parser::Step.new('Then /^I should see a message "([^"]*)" and another message "([^"]*)"$/ do |arg1, arg2|')
+    newStep2 = Stepmom::Parser::Step.new('Then /^I should see a message "([^"]*)" and another message "([^"]*)"$/ do |arg1, arg2|')
+    assert_equal 0, newStep1.distance(newStep2)
+  end
+
+  def test_get_step_distance_different_contained
+    newStep1 = Stepmom::Parser::Step.new('Then /^I should see a message "([^"]*)" and another message "([^"]*)"$/ do |arg1, arg2|')
+    newStep2 = Stepmom::Parser::Step.new('Then /^I should see a message "([^"]*)"$/ do |arg1|')
+    assert_equal 1, newStep1.distance(newStep2)
+  end
+
+  def test_get_step_distance_different
+    newStep1 = Stepmom::Parser::Step.new('Then /^I should see a message "([^"]*)" and another message "([^"]*)"$/ do |arg1, arg2|')
+    newStep2 = Stepmom::Parser::Step.new('Then /^I shouldn\'t see anything$/ do |arg1|')
+    assert_equal 11, newStep1.distance(newStep2)
+  end
+  
 end

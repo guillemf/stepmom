@@ -1,4 +1,5 @@
 require 'rainbow'
+require 'damerau-levenshtein'
 
 module Stepmom
   module Parser
@@ -12,7 +13,7 @@ module Stepmom
       }
       PARAMETERS_LIST = [
         /([(][\[][\^][™][\]][*][)])/,
-        /([(][\.][(+|*)][)][\?]?)/,
+        /([(] ?[\.][(+|*)] ?[)][\?]?)/,
         /[(][\\][d][+][)]/
       ]  
       FORMAT_FLAGS = [
@@ -95,7 +96,6 @@ module Stepmom
       def format(flags)
         if @tokens
           formattedTokens = ""
-          
           if flags.include?(:showFile)            
             if fileInfo[:path]
               truncatedFileName = File.basename(fileInfo[:path])[0..19]
@@ -126,6 +126,28 @@ module Stepmom
           end
           return formattedTokens
         end
+      end
+      
+      def distance(step)
+        selfTexts = self.text
+        stepTexts = step.text
+        
+        return stepTexts.length unless selfTexts != ''
+        return 0 unless selfTexts != stepTexts 
+                
+        selfRegex = /#{Regexp.escape(selfTexts.strip)}/i
+        stepRegex = /#{Regexp.escape(stepTexts.strip)}/i
+        if selfRegex.match(stepTexts) || stepRegex.match(selfTexts)
+          return 1
+        end
+        dl = DamerauLevenshtein
+        return dl.distance(selfTexts, stepTexts, 2)
+      end
+      
+      def text
+        text = ""
+        self.tokens.each { |x| text += " " + x[1].strip if x[0] == :text } unless self.tokens.nil?
+        return text.strip
       end
     end
     class StepsFile
@@ -162,7 +184,6 @@ module Stepmom
 #{fileTime}
 #{fileSize}
 #{fileSteps}
-
 FORMAT_INFO
       end
     end

@@ -86,7 +86,6 @@ Feature: We can list the steps contained in a file or folder
   	"""
 	Size:		877 bytes
 	Steps:		5 steps
-
 	I am on a page with betting options
 	I select a bet
 	I cant see the bet
@@ -105,7 +104,6 @@ Feature: We can list the steps contained in a file or folder
   	"""
 	Size:		877 bytes
 	Steps:		5 steps
-
 	I am (.*)? on the Homepage
 	I am on a page with betting options
 	I cant see the bet
@@ -124,7 +122,6 @@ Feature: We can list the steps contained in a file or folder
   	"""
 	Size:		877 bytes
 	Steps:		5 steps
-
   	I select a bet
   	I log in with username: (.+) and password: (.+)
   	I cant see the bet

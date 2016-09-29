@@ -23,4 +23,5 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency('test-unit')
   s.add_runtime_dependency('gli','2.14.0')
   s.add_runtime_dependency('rainbow', '2.1.0')
+  s.add_runtime_dependency('damerau-levenshtein', '~> 1.2')
 end
