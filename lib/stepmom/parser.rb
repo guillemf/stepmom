@@ -149,6 +149,11 @@ module Stepmom
         self.tokens.each { |x| text += " " + x[1].strip if x[0] == :text } unless self.tokens.nil?
         return text.strip
       end
+      
+      def match(text)
+        checkExpr = /#{Regexp.new(self.definition.strip)}/i
+        return !checkExpr.match(text).nil?
+      end
     end
     class StepsFile
       

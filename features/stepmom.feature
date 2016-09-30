@@ -12,6 +12,7 @@ Feature: We can list the steps contained in a file or folder
 	I select a bet
 	I cant see the bet
 	I am (.*)? on the Homepage
+	I am (.*)? Homepage
 	I log in with username: (.+) and password: (.+)
 	"""
 	
@@ -48,6 +49,7 @@ Feature: We can list the steps contained in a file or folder
   	When	I select a bet
   	Then	I cant see the bet
   	Given	I am (.*)? on the Homepage
+	When	I am (.*)? Homepage
   	Given	I log in with username: (.+) and password: (.+)
   	"""
 	
@@ -84,12 +86,13 @@ Feature: We can list the steps contained in a file or folder
 	"""
   	And the stdout should contain:
   	"""
-	Size:		877 bytes
-	Steps:		5 steps
+	Size:		970 bytes
+	Steps:		6 steps
 	I am on a page with betting options
 	I select a bet
 	I cant see the bet
 	I am (.*)? on the Homepage
+	I am (.*)? Homepage
 	I log in with username: (.+) and password: (.+)
   	"""
 	
@@ -102,8 +105,9 @@ Feature: We can list the steps contained in a file or folder
 	"""
   	And the stdout should contain:
   	"""
-	Size:		877 bytes
-	Steps:		5 steps
+	Size:		970 bytes
+	Steps:		6 steps
+	I am (.*)? Homepage
 	I am (.*)? on the Homepage
 	I am on a page with betting options
 	I cant see the bet
@@ -120,8 +124,8 @@ Feature: We can list the steps contained in a file or folder
 	"""
   	And the stdout should contain:
   	"""
-	Size:		877 bytes
-	Steps:		5 steps
+	Size:		970 bytes
+	Steps:		6 steps
   	I select a bet
   	I log in with username: (.+) and password: (.+)
   	I cant see the bet
@@ -138,6 +142,7 @@ Feature: We can list the steps contained in a file or folder
 	test_steps.rb       	I select a bet
 	test_steps.rb       	I cant see the bet
 	test_steps.rb       	I am (.*)? on the Homepage
+	test_steps.rb       	I am (.*)? Homepage
 	test_steps.rb       	I log in with username: (.+) and password: (.+)
   	"""
 	

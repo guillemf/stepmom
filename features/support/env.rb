@@ -41,6 +41,10 @@ Given(/^I am (.*)? on the Homepage$/) do |arg|
   element_exists("view id:'HomePage_Container'")
 end
 
+When(/^I am (.*)? Homepage$/) do |arg|
+  element_exists("view id:'HomePage_Container'")
+end
+
 Given(/^I log in with username: (.+) and password: (.+)$/) do |username, password|
   element_exists("view id:'\#\{username\}'")
   element_exists("view id:'\#\{password\}'")

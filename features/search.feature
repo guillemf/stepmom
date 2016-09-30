@@ -23,11 +23,11 @@ Feature: We can search and filter steps based on different criteria
   	When I run `stepmom -p ~/Tmp/test_steps.rb search -d "Test"`
   	Then the stdout should contain:
   	"""
-  	15: 	test_steps.rb       	I select a bet
-  	19: 	test_steps.rb       	I cant see the bet
-  	21: 	test_steps.rb       	I am (.*)? on the Homepage
-  	36: 	test_steps.rb       	I am on a page with betting options
-  	38: 	test_steps.rb       	I log in with username: (.+) and password: (.+)
+  	14: 	test_steps.rb       	I select a bet
+  	18: 	test_steps.rb       	I cant see the bet
+  	20: 	test_steps.rb       	I am (.*)? on the Homepage
+  	35: 	test_steps.rb       	I am on a page with betting options
+  	37: 	test_steps.rb       	I log in with username: (.+) and password: (.+)
   	"""
 
   Scenario: Search with matching param value description

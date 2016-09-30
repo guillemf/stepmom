@@ -93,4 +93,14 @@ class StepTest < Test::Unit::TestCase
     assert_equal 11, newStep1.distance(newStep2)
   end
   
+  def test_match_with_no_matching
+    newStep = Stepmom::Parser::Step.new('Then /^I should see a message "([^"]*)" and another message "([^"]*)"$/ do |arg1, arg2|')
+    assert_false newStep.match("nothing to match")
+  end
+  
+  def test_match_with_matching
+    newStep = Stepmom::Parser::Step.new('Then /^I should see a message "([^"]*)" and another message "([^"]*)"$/ do |arg1, arg2|')
+    assert_true newStep.match('I should see a message "one" and another message "two"')
+  end
+  
 end
