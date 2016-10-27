@@ -135,8 +135,8 @@ module Stepmom
         return stepTexts.length unless selfTexts != ''
         return 0 unless selfTexts != stepTexts 
                 
-        selfRegex = /#{Regexp.escape(selfTexts.strip)}/i
-        stepRegex = /#{Regexp.escape(stepTexts.strip)}/i
+        selfRegex = /#{Regexp.escape(selfTexts.strip.downcase)}/i
+        stepRegex = /#{Regexp.escape(stepTexts.strip.downcase)}/i
         if selfRegex.match(stepTexts) || stepRegex.match(selfTexts)
           return 1
         end
@@ -151,8 +151,8 @@ module Stepmom
       end
       
       def match(text)
-        checkExpr = /#{Regexp.new(self.definition.strip)}/i
-        return !checkExpr.match(text).nil?
+        checkExpr = /#{Regexp.new(self.definition.strip.downcase)}/i
+        return !checkExpr.match(text.downcase).nil?
       end
     end
     class StepsFile

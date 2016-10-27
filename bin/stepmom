@@ -113,7 +113,7 @@ command :search do |c|
     if options[:d] != ''
       checkStep = Stepmom::Parser::Step.new(options[:d])
     elsif options[:r] != ''
-      checkStep = /#{Regexp.new(options[:r].strip)}/i
+      checkStep = /#{Regexp.new(options[:r].strip.downcase)}/i
     else
       raise GLI::CustomExit.new("Please select one of the valid options",-6)
     end
@@ -124,7 +124,7 @@ command :search do |c|
 
     @fileSteps.each do |step|      
       if checkStep.instance_of? Regexp
-        distance = checkStep.match(step.text) ? -1 : -2
+        distance = checkStep.match(step.text.downcase) ? -1 : -2
       else
         distance = checkStep.distance(step)
       end
@@ -216,7 +216,23 @@ desc 'Performs a check to compare all steps against all steps to find duplicates
 arg_name 'check'
 command :check do |c|
   c.action do |global_options,options,args|
-    $stdout.puts "tree command ran"
+    
+    results = []
+    @fileSteps.each do |step|
+      @fileSteps.each do |check|
+        if step == check
+          next
+        end
+        if step.distance(check) < 5
+          if !results.include? [check, step]
+            $stdout.puts step.format([:showFile]) 
+            $stdout.puts check.format([:showFile]) 
+            $stdout.puts "\n"
+            results.push([step, check])
+          end
+        end
+      end
+    end
   end
 end
 
